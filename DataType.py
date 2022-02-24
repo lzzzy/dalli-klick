@@ -86,9 +86,8 @@ class ImageController:
                 )
             )
         keyfun= operator.attrgetter("area")
-        print(self.tiles)
+        # sort reverse to pop() the smallest tiles first
         self.tiles.sort(key=keyfun, reverse=True)
-        print(self.tiles)
 
     def canvas_delete_tiles(self):
         for tile in self.tiles:

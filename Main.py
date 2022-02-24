@@ -35,7 +35,7 @@ class MainWindow:
 
 
 def create_arg_parser():
-    parser = argparse.ArgumentParser(description='"Dalli Klick" Desktop App.')
+    parser = argparse.ArgumentParser(description='"Dalli Klick" Desktop App')
     parser.add_argument('inputDirectory', help='Path to the input directory.')
     return parser
 
