@@ -1,11 +1,10 @@
 import tkinter as tk
-import sys
-import argparse
+import sys, os, argparse
+from PIL import Image, ImageTk
 
 from DataType import ImageController
 
 class MainWindow:
-
     def __init__(self, root, inputDirectory):
         self.root = root
         self.root.title("Dalli Klick")
@@ -13,12 +12,17 @@ class MainWindow:
         self.root.attributes('-fullscreen', True)
         self.root.bind('<Escape>', self.toggle_fullscreen)
         self.root.bind('<Return>', self.next_image)
+        self.root.bind('<Button-3>', self.next_image)
         self.root.bind("<space>", self.next_tile)
+        self.root.bind('<Button-1>', self.next_tile)
 
         self.canvas = tk.Canvas(root, bg='white', highlightthickness=0)
         self.canvas.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
-        self.canvas.create_text((100,100), text='Dalli Klick')
+        self.imgage = ImageTk.PhotoImage(Image.open(os.path.join('.','buymeacoffee-lzzzy.png')))
+        self.canvas.config(width=self.imgage.width(), height=self.imgage.height())
+        self.canvas.create_image((0, 0), anchor=tk.NW, image=self.imgage)
+
         self.imageController = ImageController(self.root, self.canvas, inputDirectory)
 
     def toggle_fullscreen(self, event):
@@ -40,7 +44,6 @@ def create_arg_parser():
     return parser
 
 def main():
-
     arg_parser = create_arg_parser()
     parsed_args = arg_parser.parse_args(sys.argv[1:])
 

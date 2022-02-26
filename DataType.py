@@ -1,8 +1,6 @@
-import os
-import sys
 import tkinter as tk
+import os, sys, random
 
-import random
 from scipy.spatial import Voronoi
 import numpy as np
 
@@ -12,10 +10,8 @@ from shapely.geometry import Polygon, box
 import operator
 
 class ImageController:
-    valid_images = [".jpg",".gif",".png",".tga"]
+    valid_images = [".jpg",".gif",".png",".tga",".jfif",".webp"]
     imageFiles = []
-    imageFilesIndex = None
-    tileId = None
     tiles = []
 
     def __init__(self, root, canvas, inputDirectory):
@@ -30,8 +26,6 @@ class ImageController:
             if ext.lower() not in self.valid_images:
                 continue
             self.imageFiles.append(os.path.join(inputDirectory,f))        
-        self.imageFilesIndex = 0
-
     
     def resize(self, img, max_width, max_height):
         width, height = img.size
@@ -42,8 +36,7 @@ class ImageController:
             return img.resize((max_width, int(max_width/ratio)), Image.ANTIALIAS)
 
     def canvas_create_image(self):
-        pil_img = Image.open(self.imageFiles[self.imageFilesIndex])
-        self.imageFilesIndex += 1
+        pil_img = Image.open(self.imageFiles.pop(0))
         pil_img = self.resize(pil_img, self.root.winfo_screenwidth(), self.root.winfo_height())
         self.imgage = ImageTk.PhotoImage(pil_img)
         width = self.imgage.width()
@@ -53,11 +46,14 @@ class ImageController:
         return width, height
 
     def canvas_create_tiles(self, width, height):
+        # 9 points for 9 polygons are randomly placed
         points = [(random.randint(0,width),random.randint(0,height)) for i in range(9)]
-        # add 4 distant dummy points
-        points = np.append(points, [[width*99,height*99], [-width*99,height*99], [width*99,-height*99], [-width*99,-height*99]], axis = 0)
-        vor = Voronoi(points)
 
+        # a trick is used that the polygons do not stretch too far into the 
+        # invisible area;
+        # 4 dummy points are placed in the non-visible area for this purpose
+        points = np.append(points, [[width*2,height*2], [-width*2,height*2], [width*2,-height*2], [-width*2,-height*2]], axis = 0)
+        vor = Voronoi(points)
         polygons = []
         for region_index in vor.point_region:
             points = []
@@ -67,10 +63,12 @@ class ImageController:
             points.append(points[0])
             polygons.append(points)
 
-        # remove polygons for dummy point
-        for i in range(4):
-            polygons.pop()
+        # remove polygons for dummy points
+        del polygons[-4:]
+        # for i in range(4):
+        #    polygons.pop()
 
+        # create a polygon/Tile for every Voronoi region
         for poly in polygons:
             self.tiles.append(
                 Tile(
@@ -85,9 +83,9 @@ class ImageController:
                     )
                 )
             )
+        # sort by area
         keyfun= operator.attrgetter("area")
-        # sort reverse to pop() the smallest tiles first
-        self.tiles.sort(key=keyfun, reverse=True)
+        self.tiles.sort(key=keyfun)
 
     def canvas_delete_tiles(self):
         for tile in self.tiles:
@@ -100,19 +98,14 @@ class ImageController:
         self.canvas_create_tiles(width, height)
 
     def next_tile(self):
-        self.canvas.delete(self.tiles.pop().canvas_poly)
+        self.canvas.delete(self.tiles.pop(0).canvas_poly)
             
 class Tile:
     canvas_poly = None
     area = None
         
-    def __init__(self, poly, width, height,canvas_poly):
+    def __init__(self, poly, width, height, canvas_poly):
         self.canvas_poly = canvas_poly
         pgon = Polygon(poly)
+        # intersect polygons with the visible area
         self.area = pgon.intersection(box(0, 0, width, height)).area
-
-    def __str__(self):
-        return str(self.area)
-
-    def __repr__(self):
-        return self.__str__()
