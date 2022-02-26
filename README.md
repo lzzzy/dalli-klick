@@ -1,5 +1,5 @@
 # Just Another 'Dalli-Klick'
-Bilderrätsel angelehnt an das Spiel 'Dalli Klick' aus der Sendung 'Dalli Dalli'. Die Polygone zur Abdeckungen der Bilder werden zufälling per Voronoi-Generator erzeugt. Es gibt wie bei der Sendung Dalli-Dalli immer 9 Abdeckungen. 
+Bilderrätsel angelehnt an das Spiel 'Dalli Klick' aus der Sendung 'Dalli Dalli'. Die Polygone zur Abdeckungen der Bilder werden zufällig per Voronoi-Generator erzeugt. Es gibt wie bei der Sendung Dalli-Dalli immer 9 Abdeckungen. 
 
 ## Entwicklungsumgebung
 
