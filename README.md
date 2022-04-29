@@ -14,6 +14,10 @@ Kann in der Anaconda Umgebung z.B. mittels [PyInstaller](https://github.com/pyin
 
 python -OO -m PyInstaller --onefile Main.py
 
+Kann in der Anaconda Umgebung z.B. mittels  [Nuitka](https://nuitka.net/doc/user-manual.html)  erzeugt werden:
+
+python -m nuitka --onefile --plugin-enable=tk-inter --plugin-enable=numpy Main.py
+
 ## Progammstart
 
 In der Anaconda Umgebung start mittels:
